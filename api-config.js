@@ -8,7 +8,7 @@
 
 // URL Deployment Web App Google Apps Script Anda (Ganti dengan URL /exec Anda)
 // Contoh: "https://script.google.com/macros/s/AKfycbx.../exec"
-var DEFAULT_GAS_API_URL = "";
+var DEFAULT_GAS_API_URL = "https://script.google.com/macros/s/AKfycbyak-3oJivH9Df47yeZ7nXtUFXWWpw9W2RHAePs9i4lu6tWD0K4ha7eBrL0s5D6HPPZ/exec";
 
 // Ambil URL dari localStorage jika user pernah menginputkan via UI
 var GAS_API_URL = localStorage.getItem('satpam_gas_api_url') || DEFAULT_GAS_API_URL;
