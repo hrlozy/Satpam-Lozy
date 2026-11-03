@@ -1,0 +1,2672 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart Security — Dual Site</title>
+  <meta name="description" content="Sistem manajemen keamanan satpam untuk Area Packing dan Kantor Utama">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- HTML5 QR Code Scanner -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>`r`n  <!-- GitHub Pages API Bridge -->`r`n  <script src="api-config.js"></script>
+
+  <style>
+    :root {
+      /* LOZY PCP SERVICE LIGHT THEME */
+      --bg-primary: #fffaf8;
+      --bg-secondary: #fff5f6;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fff0f3;
+      --bg-glass: rgba(255, 255, 255, 0.9);
+      --border-subtle: #f0dfe2;
+      --border-glow: rgba(235, 127, 151, 0.25);
+      --text-primary: #4b3040;
+      --text-secondary: #766770;
+      --text-muted: #a4969e;
+      
+      --accent-blue: #6384ff;
+      --accent-blue-glow: rgba(99, 132, 255, 0.3);
+      --accent-emerald: #34d399;
+      --accent-amber: #f7b08d;
+      --accent-rose: #eb7f97;
+      --accent-purple: #a78bfa;
+      --accent-cyan: #22d3ee;
+      
+      --gradient-blue: linear-gradient(135deg, #6384ff 0%, #4f46e5 100%);
+      --gradient-emerald: linear-gradient(135deg, #34d399 0%, #059669 100%);
+      --gradient-amber: linear-gradient(135deg, #f7b08d 0%, #e08c65 100%);
+      --gradient-rose: linear-gradient(135deg, #eb7f97 0%, #c95e78 100%);
+      --gradient-purple: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      --gradient-dark: linear-gradient(180deg, #fffaf8 0%, #fff5f6 100%);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+      --shadow-card: 0 10px 30px rgba(92, 45, 60, 0.05);
+      --shadow-glow-blue: 0 0 30px rgba(235, 127, 151, 0.15);
+      --shadow-glow-emerald: 0 0 30px rgba(52, 211, 153, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gradient-dark);
+      color: var(--text-primary);
+      height: 100vh;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ==================== SCROLLBAR ==================== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(100%); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes breathe {
+      0%, 100% { box-shadow: 0 0 20px rgba(99, 132, 255, 0.15); }
+      50% { box-shadow: 0 0 35px rgba(99, 132, 255, 0.35); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.5s ease-out both; }
+    .animate-fade-in { animation: fadeIn 0.3s ease-out both; }
+    .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+    .delay-400 { animation-delay: 400ms; }
+
+    /* ==================== SCREEN: SITE SELECTION ==================== */
+    #screen-site-select {
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(ellipse at 50% 20%, rgba(99, 132, 255, 0.08) 0%, transparent 60%),
+                  var(--gradient-dark);
+    }
+
+    .site-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-lg);
+      background: var(--gradient-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-glow-blue);
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    .site-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .site-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 36px;
+    }
+
+    .site-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .site-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .site-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-glow-blue);
+    }
+
+    .site-card:hover::before { opacity: 1; }
+
+    .site-card.packing::before { background: var(--gradient-amber); }
+    .site-card.kantor::before { background: var(--gradient-blue); }
+
+    .site-card:active { transform: translateY(-2px) scale(0.98); }
+
+    .site-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .site-card.packing .site-card-icon {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%);
+      color: var(--accent-amber);
+    }
+
+    .site-card.kantor .site-card-icon {
+      background: linear-gradient(135deg, rgba(99, 132, 255, 0.15) 0%, rgba(79, 70, 229, 0.15) 100%);
+      color: var(--accent-blue);
+    }
+
+    .site-card-name {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .site-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .site-card-arrow {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .site-card:hover .site-card-arrow {
+      color: var(--accent-blue);
+      transform: translateY(-50%) translateX(4px);
+    }
+
+    /* ==================== SCREEN: MAIN APP ==================== */
+    #screen-main-app { 
+      display: none; 
+      flex-direction: column; 
+      height: 100%; 
+      width: 100%;
+      overflow: hidden; 
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 16px;
+    }
+
+    .app-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-site-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-site-badge.packing {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber);
+    }
+
+    .header-site-badge.kantor {
+      background: rgba(99, 132, 255, 0.12);
+      color: var(--accent-blue);
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .header-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--border-glow);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      position: relative;
+    }
+
+    .status-dot::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      animation: pulse-ring 2s ease-out infinite;
+    }
+
+    /* ==================== BOTTOM NAV ==================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid var(--border-subtle);
+      padding: 6px 0;
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
+
+    .bottom-nav-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-btn i { font-size: 19px; transition: all 0.2s ease; }
+
+    .nav-btn span {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .nav-btn.active {
+      color: var(--accent-blue);
+    }
+
+    .nav-btn.active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent-blue);
+    }
+
+    .nav-btn.emergency { color: var(--accent-rose); }
+    .nav-btn.emergency.active { color: var(--accent-rose); }
+    .nav-btn.emergency.active::after { background: var(--accent-rose); }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      padding-bottom: 90px;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+    /* ==================== CARD STYLES ==================== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card:hover { border-color: var(--border-glow); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title i {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* ==================== FORM STYLES ==================== */
+    .form-group { margin-bottom: 14px; }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(99, 132, 255, 0.12);
+    }
+
+    .form-input::placeholder { color: var(--text-muted); }
+
+    select.form-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b95b0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    textarea.form-input { resize: vertical; min-height: 80px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 20px;
+      border-radius: var(--radius-md);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:hover::after { opacity: 1; }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--gradient-blue);
+      color: white;
+      box-shadow: 0 4px 16px rgba(99, 132, 255, 0.25);
+    }
+
+    .btn-primary:hover { box-shadow: 0 6px 24px rgba(99, 132, 255, 0.4); transform: translateY(-1px); }
+
+    .btn-dark {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-dark:hover { border-color: var(--border-glow); background: var(--bg-card-hover); }
+
+    .btn-danger {
+      background: var(--gradient-rose);
+      color: white;
+      box-shadow: 0 4px 16px rgba(251, 113, 133, 0.25);
+    }
+
+    .btn-danger:hover { box-shadow: 0 6px 24px rgba(251, 113, 133, 0.4); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px dashed var(--border-glow);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline:hover { border-style: solid; color: var(--accent-blue); background: rgba(99, 132, 255, 0.05); }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      width: auto;
+    }
+
+    /* ==================== CAMERA AREA ==================== */
+    .camera-drop {
+      border: 2px dashed var(--border-glow);
+      border-radius: var(--radius-lg);
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: rgba(99, 132, 255, 0.03);
+    }
+
+    .camera-drop:hover {
+      border-color: var(--accent-blue);
+      background: rgba(99, 132, 255, 0.08);
+    }
+
+    .camera-drop i {
+      font-size: 28px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .camera-drop p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .camera-preview {
+      margin-top: 12px;
+      border-radius: var(--radius-md);
+      max-height: 200px;
+      width: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* ==================== TOGGLE BUTTONS (Kondisi Patroli) ==================== */
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle-btn {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toggle-btn.aman-active {
+      border-color: var(--accent-emerald);
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--accent-emerald);
+    }
+
+    .toggle-btn.temuan-active {
+      border-color: var(--accent-rose);
+      background: rgba(251, 113, 133, 0.1);
+      color: var(--accent-rose);
+    }
+
+    /* ==================== LIST ITEMS ==================== */
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      animation: fadeInUp 0.3s ease-out both;
+    }
+
+    .list-item:last-child { border-bottom: none; }
+
+    .list-item-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .list-item-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .list-empty {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ==================== QR SCAN HERO ==================== */
+    .scan-hero {
+      background: radial-gradient(ellipse at 50% 30%, rgba(99, 132, 255, 0.12) 0%, var(--bg-card) 70%);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-xl);
+      padding: 32px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .scan-hero i {
+      font-size: 48px;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .scan-hero h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .scan-hero p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* ==================== METRIC CARDS ==================== */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .metric-card:hover { border-color: var(--border-glow); transform: translateY(-2px); }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .metric-value.blue { color: var(--accent-blue); }
+    .metric-value.emerald { color: var(--accent-emerald); }
+    .metric-value.amber { color: var(--accent-amber); }
+    .metric-value.rose { color: var(--accent-rose); }
+    .metric-value.purple { color: var(--accent-purple); }
+    .metric-value.cyan { color: var(--accent-cyan); }
+
+    /* ==================== LEADERBOARD ==================== */
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .leaderboard-item:last-child { border-bottom: none; }
+
+    .leaderboard-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .leaderboard-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .leaderboard-rank.gold { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); }
+    .leaderboard-rank.silver { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+    .leaderboard-rank.bronze { background: rgba(217, 119, 6, 0.15); color: #d97706; }
+    .leaderboard-rank.default { background: var(--bg-secondary); color: var(--text-muted); }
+
+    .leaderboard-name { font-size: 14px; font-weight: 600; }
+
+    .leaderboard-points {
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(99, 132, 255, 0.1);
+      color: var(--accent-blue);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+    }
+
+    /* ==================== FILTER BAR ==================== */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      padding-right: 30px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238b95b0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ==================== EMERGENCY ALERT BOX ==================== */
+    .alert-box {
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .alert-box.danger {
+      background: rgba(251, 113, 133, 0.08);
+      border: 1px solid rgba(251, 113, 133, 0.2);
+    }
+
+    .alert-box.danger h2 {
+      color: var(--accent-rose);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .alert-box.danger p {
+      color: rgba(251, 113, 133, 0.7);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* ==================== LOADING OVERLAY ==================== */
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border-subtle);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ==================== TOAST ==================== */
+    .toast {
+      position: fixed;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      z-index: 200;
+      animation: fadeInUp 0.3s ease-out;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    .toast:empty { display: none; }
+
+    .toast.success { background: var(--gradient-emerald); }
+    .toast.error { background: var(--gradient-rose); }
+
+    /* ==================== QR READER ==================== */
+    #qr-reader {
+      display: none;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 2px solid var(--accent-blue);
+      margin-bottom: 16px;
+    }
+
+    /* ==================== BADGE ==================== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-emerald { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
+    .badge-amber { background: rgba(251, 191, 36, 0.12); color: var(--accent-amber); }
+    .badge-rose { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
+    .badge-blue { background: rgba(99, 132, 255, 0.12); color: var(--accent-blue); }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 360px) {
+      .metric-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .metric-card { padding: 12px; }
+      .metric-value { font-size: 24px; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Unauthenticated Overlay -->
+  <div id="unauth-overlay" style="display:none; position:fixed; inset:0; background:var(--bg-primary); z-index:99999; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center;">
+    <div style="font-size: 50px; color: var(--accent-rose); margin-bottom: 20px;">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+    <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 10px; color: var(--text-primary);">Akses Terkunci</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 30px; font-size: 15px;">Sesi Anda telah berakhir atau Anda belum masuk.</p>
+    <a id="btn-login-redirect" href="#" target="_top" class="btn btn-primary" style="text-decoration:none; padding: 12px 24px;">Kembali ke Login</a>
+  </div>
+
+  <!-- ==================== SCREEN 1: SITE SELECTION ==================== -->
+  <div id="screen-site-select">
+    <div class="site-logo animate-fade-in-up">
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+    <h1 class="site-title animate-fade-in-up delay-100">Smart Security</h1>
+    <p class="site-subtitle animate-fade-in-up delay-200">Pilih lokasi pos jaga Anda</p>
+
+    <div class="site-card packing animate-fade-in-up delay-300" onclick="App.Session.selectSite('LOC-PCK')">
+      <div class="site-card-icon">
+        <i class="fa-solid fa-boxes-stacked"></i>
+      </div>
+      <div class="site-card-name">📦 Area Packing</div>
+      <div class="site-card-desc">Gudang, jalur konveyor, pintu muat barang, gate pass truk logistik</div>
+      <div class="site-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+
+    <div class="site-card kantor animate-fade-in-up delay-400" onclick="App.Session.selectSite('LOC-KTR')">
+      <div class="site-card-icon">
+        <i class="fa-solid fa-building"></i>
+      </div>
+      <div class="site-card-name">🏢 Kantor Utama</div>
+      <div class="site-card-desc">Resepsionis, buku tamu, serah terima kunci ruangan, server room</div>
+      <div class="site-card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 2: MAIN APPLICATION ==================== -->
+  <div id="screen-main-app">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="app-header-top">
+        <div class="app-header-left">
+          <span id="header-badge" class="header-site-badge packing">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="header-site-name">Area Packing</span>
+          </span>
+          <h1 id="app-title" class="header-title">Buku Tamu</h1>
+        </div>
+        <div class="header-actions">
+          <div class="status-dot" id="connection-dot"></div>
+          <button class="header-btn" onclick="App.Session.switchSite()" title="Ganti Lokasi" id="btn-switch-site">
+            <i class="fa-solid fa-right-left"></i>
+          </button>
+          <button class="header-btn" onclick="App.Session.logout()" title="Keluar" style="color: var(--accent-rose);">
+            <i class="fa-solid fa-power-off"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p class="loading-text" id="loading-text">Memproses Data...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ==================== TAB 1: BUKU TAMU ==================== -->
+      <section id="view-tamu" class="view-section active">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: rgba(99, 132, 255, 0.12); color: var(--accent-blue);">
+            <i class="fa-solid fa-id-card-clip"></i>
+          </div>
+          Buku Tamu Digital
+        </div>
+
+        <!-- Form Registrasi Tamu -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="color: var(--accent-blue);">
+              <i class="fa-solid fa-user-plus"></i> Registrasi Masuk
+            </div>
+          </div>
+
+          <form id="form-tamu" onsubmit="App.Tamu.submit(event)">
+            <div class="form-group">
+              <label class="form-label">Nama sesuai KTP</label>
+              <textarea id="tamu-nama" required class="form-input" rows="2" placeholder="Nama lengkap tamu (Bisa lebih dari 1, pisahkan dengan koma)"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Instansi / Asal</label>
+                <input type="text" id="tamu-instansi" required class="form-input" placeholder="PT / Perusahaan">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Plat Nomor</label>
+                <input type="text" id="tamu-nopol" class="form-input" placeholder="B 1234 XYZ" style="text-transform: uppercase;">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Keperluan & Tujuan</label>
+              <input type="text" id="tamu-tujuan" required class="form-input" placeholder="Misal: Bertemu Pak Budi (IT)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Foto Tamu / KTP</label>
+              <div class="camera-drop">
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                  <button type="button" onclick="App.Camera.openCamera('tamu-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-camera"></i> Kamera</button>
+                  <button type="button" onclick="App.Camera.openGallery('tamu-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-image"></i> Galeri</button>
+                </div>
+                <img id="tamu-preview" class="camera-preview">
+                <input type="hidden" id="tamu-base64">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-save"></i> Simpan Data Tamu
+            </button>
+          </form>
+        </div>
+
+        <!-- Daftar Tamu Aktif -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="color: var(--accent-emerald);">
+              <i class="fa-solid fa-right-from-bracket"></i> Tamu Aktif
+            </div>
+            <button class="btn btn-sm btn-dark" onclick="App.Tamu.loadActive()">
+              <i class="fa-solid fa-sync"></i> Refresh
+            </button>
+          </div>
+          <div id="list-tamu-aktif">
+            <div class="list-empty">Ketuk refresh untuk memuat data tamu.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: PATROLI ==================== -->
+      <section id="view-patroli" class="view-section">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: rgba(167, 139, 250, 0.12); color: var(--accent-purple);">
+            <i class="fa-solid fa-route"></i>
+          </div>
+          Inspeksi Patroli
+        </div>
+
+        <!-- QR Scan Hero -->
+        <div class="scan-hero">
+          <i class="fa-solid fa-qrcode"></i>
+          <h3>Scan Checkpoint Pos</h3>
+          <p>Arahkan kamera ke stiker QR Code yang terpasang di dinding pos patroli.</p>
+          <div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto 12px auto;">
+            <button type="button" onclick="App.Patroli.openLiveScanner()" class="btn btn-primary" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); box-shadow: 0 4px 15px rgba(167, 139, 250, 0.35); font-size: 15px; padding: 13px;">
+              <i class="fa-solid fa-bolt"></i> Buka Live Scanner (HD)
+            </button>
+            <button type="button" onclick="App.Patroli.startScan()" class="btn btn-outline" style="font-size: 13px; padding: 10px;">
+              <i class="fa-solid fa-camera"></i> Gunakan Scanner Internal
+            </button>
+          </div>
+          <input type="file" id="qr-fallback-input" accept="image/*" capture="environment" style="display:none;" onchange="App.Patroli.handleFallbackScan(event)">
+        </div>
+
+        <!-- QR Reader Container -->
+        <div id="qr-reader"></div>
+        <button id="btn-tutup-scanner" onclick="App.Patroli.stopScan(false)" class="btn btn-outline" style="display:none; width:100%; margin-bottom: 16px;">
+           <i class="fa-solid fa-xmark"></i> Tutup Scanner / Gagal Scan
+        </button>
+
+        <!-- Form Hasil Scan -->
+        <div id="form-patroli" class="card hidden">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+            <span class="badge badge-emerald" id="patroli-id-titik" style="font-size: 13px; padding: 6px 14px;">
+              CP-LOC-000
+            </span>
+            <span class="badge badge-blue" id="patroli-nama-titik"></span>
+            <select id="patroli-bypass-select" class="form-input" style="display: none; width: 100%;">
+              <option value="">-- Pilih Titik Patroli --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Kondisi Area</label>
+            <div class="toggle-group">
+              <button type="button" onclick="App.Patroli.setKondisi('AMAN')" id="btn-kondisi-aman" class="toggle-btn aman-active">
+                <i class="fa-solid fa-check-circle"></i> AMAN
+              </button>
+              <button type="button" onclick="App.Patroli.setKondisi('TEMUAN')" id="btn-kondisi-temuan" class="toggle-btn">
+                <i class="fa-solid fa-exclamation-circle"></i> TEMUAN
+              </button>
+            </div>
+          </div>
+
+          <div id="patroli-temuan-area" class="hidden">
+            <div class="form-group">
+              <textarea id="patroli-catatan" class="form-input" placeholder="Jelaskan temuan/anomali yang ditemukan..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" onclick="App.Camera.openCamera('patroli-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-camera"></i> Kamera</button>
+                <button type="button" onclick="App.Camera.openGallery('patroli-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-image"></i> Galeri</button>
+              </div>
+              <img id="patroli-preview" class="camera-preview">
+              <input type="hidden" id="patroli-base64">
+            </div>
+          </div>
+
+          <button type="button" onclick="App.Patroli.submit()" class="btn btn-dark" style="margin-top: 8px;">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Laporan Pos
+          </button>
+        </div>
+
+        <!-- Daftar Checkpoint Tersisa -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="color: var(--accent-purple);">
+              <i class="fa-solid fa-map-pin"></i> Checkpoint Lokasi
+            </div>
+            <button class="btn btn-sm btn-dark" onclick="App.Patroli.loadCheckpoints()">
+              <i class="fa-solid fa-sync"></i>
+            </button>
+          </div>
+          <div id="list-checkpoints">
+            <div class="list-empty">Ketuk refresh untuk melihat daftar titik pantau.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: MODUL KHUSUS (Logistik / Kunci) ==================== -->
+      <section id="view-special" class="view-section">
+
+        <!-- === MODUL LOGISTIK (Packing Only) === -->
+        <div id="module-logistik">
+          <div class="section-title">
+            <div class="section-title-icon" style="background: rgba(251, 191, 36, 0.12); color: var(--accent-amber);">
+              <i class="fa-solid fa-truck"></i>
+            </div>
+            Gate Pass Logistik
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-amber);">
+                <i class="fa-solid fa-file-circle-plus"></i> Catat Kendaraan
+              </div>
+            </div>
+
+            <form id="form-logistik" onsubmit="App.Logistik.submit(event)">
+              <div class="form-group">
+                <label class="form-label">Jenis Aktivitas</label>
+                <select id="log-jenis" class="form-input">
+                  <option>Truk Masuk (Loading)</option>
+                  <option>Truk Keluar (Unloading)</option>
+                  <option>Kontainer Bahan Kemasan</option>
+                  <option>Pengiriman Hasil Produksi</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">No. Polisi</label>
+                  <input type="text" id="log-nopol" required class="form-input" placeholder="B 9999 XY" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nama Pengemudi</label>
+                  <input type="text" id="log-pengemudi" required class="form-input" placeholder="Nama supir">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">No. Surat Jalan</label>
+                <input type="text" id="log-suratjalan" required class="form-input" placeholder="SJ-2026-XXXX">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Asal / Tujuan</label>
+                <input type="text" id="log-asaltujuan" class="form-input" placeholder="Gudang Pusat → Area Muat">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Keterangan</label>
+                <textarea id="log-keterangan" class="form-input" rows="2" placeholder="Info tambahan..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Foto Surat Jalan</label>
+                <div class="camera-drop">
+                  <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button type="button" onclick="App.Camera.openCamera('log-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-camera"></i> Kamera</button>
+                    <button type="button" onclick="App.Camera.openGallery('log-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-image"></i> Galeri</button>
+                  </div>
+                  <img id="log-preview" class="camera-preview">
+                  <input type="hidden" id="log-base64">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="background: var(--gradient-amber);">
+                <i class="fa-solid fa-truck-arrow-right"></i> Simpan Data Logistik
+              </button>
+            </form>
+          </div>
+
+          <!-- Riwayat Logistik Hari ini -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-amber);">
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Hari Ini
+              </div>
+              <button class="btn btn-sm btn-dark" onclick="App.Logistik.loadRiwayat()">
+                <i class="fa-solid fa-sync"></i>
+              </button>
+            </div>
+            <div id="list-logistik">
+              <div class="list-empty">Belum ada data logistik hari ini.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === MODUL PAKET & BARANG (Kantor Only) === -->
+        <div id="module-paket" class="hidden">
+          <div class="section-title">
+            <div class="section-title-icon" style="background: rgba(34, 211, 238, 0.12); color: var(--accent-cyan);">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            Paket & Barang
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-cyan);">
+                <i class="fa-solid fa-clipboard-check"></i> Catat Barang
+              </div>
+            </div>
+
+            <form id="form-paket" onsubmit="App.Paket.submit(event)">
+              <div class="form-group">
+                <label class="form-label">Jenis Barang</label>
+                <select id="pkt-jenis" class="form-input">
+                  <option>Paket Masuk (Kurir)</option>
+                  <option>Paket Keluar (Diambil Kurir)</option>
+                  <option>Barang Karyawan (Titipan)</option>
+                  <option>Barang Inventaris / Vendor</option>
+                  <option>Lainnya</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nama Pengirim / Penerima</label>
+                  <input type="text" id="pkt-pengirim" required class="form-input" placeholder="Atas nama siapa?">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Ekspedisi / Pembawa</label>
+                  <input type="text" id="pkt-ekspedisi" class="form-input" placeholder="JNE, Gojek, Vendor X, dll">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Keterangan Tambahan</label>
+                <input type="text" id="pkt-keterangan" required class="form-input" placeholder="Misal: Dus besar, Makanan, Dokumen">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Foto Paket / Resi</label>
+                <div class="camera-drop">
+                  <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button type="button" onclick="App.Camera.openCamera('pkt-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-camera"></i> Kamera</button>
+                    <button type="button" onclick="App.Camera.openGallery('pkt-preview')" class="btn btn-outline" style="flex:1; min-width:120px;"><i class="fa-solid fa-image"></i> Galeri</button>
+                  </div>
+                  <img id="pkt-preview" class="camera-preview">
+                  <input type="hidden" id="pkt-base64">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);">
+                <i class="fa-solid fa-box"></i> Simpan Data Paket/Barang
+              </button>
+            </form>
+          </div>
+
+          <!-- Riwayat Paket Hari ini -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-cyan);">
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Hari Ini
+              </div>
+              <button class="btn btn-sm btn-dark" onclick="App.Paket.loadRiwayat()">
+                <i class="fa-solid fa-sync"></i>
+              </button>
+            </div>
+            <div id="list-paket">
+              <div class="list-empty">Belum ada data paket hari ini.</div>
+            </div>
+          </div>
+        </div>
+        <!-- === MODUL KUNCI (Kantor Only) === -->
+        <div id="module-kunci" class="hidden" style="margin-top: 30px;">
+          <div class="section-title">
+            <div class="section-title-icon" style="background: rgba(34, 211, 238, 0.12); color: var(--accent-cyan);">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            Serah Terima Kunci
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-cyan);">
+                <i class="fa-solid fa-hand-holding"></i> Pinjam Kunci
+              </div>
+            </div>
+
+            <form id="form-kunci" onsubmit="App.Kunci.submit(event)">
+              <div class="form-group">
+                <label class="form-label">Nama Ruangan</label>
+                <select id="kunci-ruangan" class="form-input">
+                  <optgroup label="Kunci Kendaraan / Inventaris">
+                    <option value="Mobil Hiace">Mobil Hiace</option>
+                    <option value="Truk Engkel">Truk Engkel</option>
+                    <option value="Blinven">Blinven</option>
+                    <option value="Belinven Box">Belinven Box</option>
+                    <option value="Mobil BRV">Mobil BRV</option>
+                    <option value="Mobil BYD">Mobil BYD</option>
+                    <option value="2 Motor Beat">2 Motor Beat</option>
+                  </optgroup>
+                  <optgroup label="Kunci Area / Ruangan">
+                    <option value="Gudang">Gudang</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Quin">Quin</option>
+                    <option value="Inhouse">Inhouse</option>
+                    <option value="Rumah / Parkiran Motor">Rumah / Parkiran Motor</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Nama Peminjam</label>
+                <input type="text" id="kunci-peminjam" required class="form-input" placeholder="Nama lengkap peminjam">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Keperluan</label>
+                <input type="text" id="kunci-keperluan" required class="form-input" placeholder="Rapat, maintenance, dll">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);">
+                <i class="fa-solid fa-key"></i> Catat Peminjaman Kunci
+              </button>
+            </form>
+          </div>
+
+          <!-- Daftar Kunci Aktif -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color: var(--accent-cyan);">
+                <i class="fa-solid fa-lock-open"></i> Kunci Dipinjam
+              </div>
+              <button class="btn btn-sm btn-dark" onclick="App.Kunci.loadAktif()">
+                <i class="fa-solid fa-sync"></i>
+              </button>
+            </div>
+            <div id="list-kunci">
+              <div class="list-empty">Belum ada kunci yang dipinjam.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 4: INSIDEN ==================== -->
+      <section id="view-insiden" class="view-section">
+        <div class="alert-box danger">
+          <h2><i class="fa-solid fa-triangle-exclamation"></i> Lapor Insiden</h2>
+          <p>Gunakan form ini untuk kejadian darurat, kecelakaan, atau kerusakan berat.</p>
+        </div>
+
+        <div class="card">
+          <form id="form-insiden" onsubmit="App.Insiden.submit(event)">
+            <div class="form-group">
+              <label class="form-label">Kategori Bahaya</label>
+              <select id="insiden-kategori" class="form-input">
+                <option>Keamanan (Pencurian/Penyusup)</option>
+                <option>K3 (Kebakaran/Kecelakaan)</option>
+                <option>Kerusakan Fasilitas/Aset</option>
+                <option>Lainnya</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tingkat Prioritas</label>
+              <select id="insiden-prioritas" class="form-input">
+                <option value="Darurat">🔴 DARURAT (Kirim Alert Instan)</option>
+                <option value="Sedang">🟠 SEDANG (Perbaikan Cepat)</option>
+                <option value="Rendah">🟡 RENDAH (Pemeliharaan Rutin)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Lokasi Kejadian</label>
+              <input type="text" id="insiden-lokasi" required class="form-input" placeholder="Titik kejadian spesifik">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Kronologi Ringkas</label>
+              <textarea id="insiden-kronologi" required class="form-input" rows="3" placeholder="Ceritakan kronologi kejadian..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Foto TKP (Wajib)</label>
+              <div class="camera-drop" style="border-color: rgba(251, 113, 133, 0.3);">
+                <p style="color: var(--accent-rose); margin-bottom: 10px;">Wajib Lampirkan Foto TKP</p>
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                  <button type="button" onclick="App.Camera.openCamera('insiden-preview')" class="btn btn-outline" style="flex:1; min-width:120px; border-color: var(--accent-rose); color: var(--accent-rose);"><i class="fa-solid fa-camera"></i> Kamera</button>
+                  <button type="button" onclick="App.Camera.openGallery('insiden-preview')" class="btn btn-outline" style="flex:1; min-width:120px; border-color: var(--accent-rose); color: var(--accent-rose);"><i class="fa-solid fa-image"></i> Galeri</button>
+                </div>
+                <img id="insiden-preview" class="camera-preview">
+                <input type="hidden" id="insiden-base64">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-danger">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Laporan Darurat
+            </button>
+          </form>
+        </div>
+
+        <!-- Riwayat Insiden Hari Ini -->
+        <div class="card" style="margin-top: 15px;">
+          <div class="card-header">
+            <div class="card-title" style="color: var(--accent-rose);">
+              <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Insiden Hari Ini
+            </div>
+            <button class="btn btn-sm btn-dark" onclick="App.Insiden.loadRiwayat()">
+              <i class="fa-solid fa-sync"></i>
+            </button>
+          </div>
+          <div id="list-insiden">
+            <div class="list-empty">Belum ada data insiden hari ini.</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner" id="nav-container">
+        <button class="nav-btn active" onclick="App.UI.navigate('tamu', this)" data-view="tamu">
+          <i class="fa-solid fa-id-card-clip"></i>
+          <span>Tamu</span>
+        </button>
+        <button class="nav-btn" onclick="App.UI.navigate('patroli', this)" data-view="patroli">
+          <i class="fa-solid fa-route"></i>
+          <span>Patroli</span>
+        </button>
+        <button class="nav-btn" onclick="App.UI.navigate('special', this)" data-view="special" id="nav-special-btn">
+          <i class="fa-solid fa-truck" id="nav-special-icon"></i>
+          <span id="nav-special-label">Logistik</span>
+        </button>
+        <button class="nav-btn emergency" onclick="App.UI.navigate('insiden', this)" data-view="insiden">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Insiden</span>
+        </button>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- Komponen Kamera Tersembunyi -->
+  <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+  <input type="file" id="gallery-input" accept="image/*" style="display: none;">
+  <canvas id="compress-canvas" style="display: none;"></canvas>
+
+  <script>
+    /**
+     * ==============================================================================
+     * FRONTEND CORE LOGIC — MULTI-SITE SYSTEM
+     * ==============================================================================
+     */
+    const App = {
+
+      // ==================== SESSION & SITE ====================
+      Session: {
+        currentSiteId: null,
+        currentSiteName: '',
+        currentPetugas: 'Petugas Jaga', // Default, bisa dikembangkan dengan login
+
+        selectSite: function(siteId) {
+          this.currentSiteId = siteId;
+
+          const siteNames = {
+            'LOC-PCK': 'Area Packing',
+            'LOC-KTR': 'Kantor Utama'
+          };
+          this.currentSiteName = siteNames[siteId] || siteId;
+
+          // Hide site selection, show main app
+          document.getElementById('screen-site-select').style.display = 'none';
+          document.getElementById('screen-main-app').style.display = 'flex';
+
+          // Update header badge
+          const badge = document.getElementById('header-badge');
+          const siteName = document.getElementById('header-site-name');
+          siteName.textContent = this.currentSiteName;
+
+          if (siteId === 'LOC-PCK') {
+            badge.className = 'header-site-badge packing';
+            // Show Logistik module, hide Paket & Kunci
+            document.getElementById('module-logistik').classList.remove('hidden');
+            document.getElementById('module-paket').classList.add('hidden');
+            document.getElementById('module-kunci').classList.add('hidden');
+            document.getElementById('nav-special-icon').className = 'fa-solid fa-truck';
+            document.getElementById('nav-special-label').textContent = 'Logistik';
+          } else {
+            badge.className = 'header-site-badge kantor';
+            // Show Paket & Kunci module, hide Logistik
+            document.getElementById('module-logistik').classList.add('hidden');
+            document.getElementById('module-paket').classList.remove('hidden');
+            document.getElementById('module-kunci').classList.remove('hidden');
+            document.getElementById('nav-special-icon').className = 'fa-solid fa-box-open';
+            document.getElementById('nav-special-label').textContent = 'Paket & Kunci';
+          }
+
+          // Reset to Tamu view
+          App.UI.navigate('tamu', document.querySelector('.nav-btn[data-view="tamu"]'));
+        },
+
+        switchSite: function() {
+          // Go back to site selection
+          document.getElementById('screen-main-app').style.display = 'none';
+          document.getElementById('screen-site-select').style.display = 'flex';
+          this.currentSiteId = null;
+        }
+      },
+
+      // ==================== UI HELPERS ====================
+      UI: {
+        navigate: function(viewId, btnEl) {
+          // Switch active view
+          document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+          document.getElementById('view-' + viewId).classList.add('active');
+
+          // Switch active nav
+          document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+          if (btnEl) btnEl.classList.add('active');
+
+          // Update title
+          const titles = {
+            'tamu': 'Buku Tamu',
+            'patroli': 'Inspeksi Patroli',
+            'special': App.Session.currentSiteId === 'LOC-PCK' ? 'Gate Pass Logistik' : 'Serah Terima Kunci',
+            'insiden': 'Lapor Insiden',
+            'admin': 'Dashboard Monitor'
+          };
+          document.getElementById('app-title').textContent = titles[viewId] || '';
+
+          // Auto-load dashboard data when switching to admin
+          if (viewId === 'admin') App.Admin.load();
+          // Auto-load checkpoint list when switching to patroli
+          if (viewId === 'patroli') App.Patroli.loadCheckpoints();
+        },
+
+        showLoading: function(text) {
+          document.getElementById('loading-text').textContent = text || 'Memproses...';
+          document.getElementById('loading-overlay').style.display = 'flex';
+        },
+
+        hideLoading: function() {
+          document.getElementById('loading-overlay').style.display = 'none';
+        },
+
+        toast: function(msg, isError) {
+          var t = document.createElement('div');
+          t.className = 'toast ' + (isError ? 'error' : 'success');
+          t.textContent = msg;
+          document.body.appendChild(t);
+          setTimeout(function() {
+            t.style.opacity = '0';
+            t.style.transition = 'opacity 0.3s ease';
+            setTimeout(function() { t.remove(); }, 300);
+          }, 3000);
+        }
+      },
+
+      // ==================== CAMERA MODULE ====================
+      Camera: {
+        targetPreview: null,
+        targetInput: null,
+
+        open: function(previewId) {
+          this.targetPreview = document.getElementById(previewId);
+          this.targetInput = document.getElementById(previewId.replace('preview', 'base64'));
+          document.getElementById('camera-input').click();
+        },
+
+        openCamera: function(previewId) {
+          this.targetPreview = document.getElementById(previewId);
+          this.targetInput = document.getElementById(previewId.replace('preview', 'base64'));
+          document.getElementById('camera-input').click();
+        },
+
+        openGallery: function(previewId) {
+          this.targetPreview = document.getElementById(previewId);
+          this.targetInput = document.getElementById(previewId.replace('preview', 'base64'));
+          document.getElementById('gallery-input').click();
+        },
+
+        compressImage: function(file) {
+          App.UI.showLoading('Mengompresi Foto...');
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+              var canvas = document.getElementById('compress-canvas');
+              var ctx = canvas.getContext('2d');
+              var MAX_WIDTH = 800;
+              var width = img.width;
+              var height = img.height;
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+              canvas.width = width;
+              canvas.height = height;
+              ctx.drawImage(img, 0, 0, width, height);
+              var base64Str = canvas.toDataURL('image/jpeg', 0.6); // Kompresi ekstra (60% kualitas)
+              App.Camera.targetPreview.src = base64Str;
+              App.Camera.targetPreview.style.display = 'block';
+              App.Camera.targetInput.value = base64Str;
+              App.UI.hideLoading();
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      },
+
+      // ==================== TAMU MODULE ====================
+      Tamu: {
+        submit: function(e) {
+          e.preventDefault();
+          var base64 = document.getElementById('tamu-base64').value;
+          if (!base64) return App.UI.toast('Foto KTP/Wajah wajib diisi!', true);
+
+          App.UI.showLoading('Menyimpan Data Tamu...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            nama: document.getElementById('tamu-nama').value,
+            instansi: document.getElementById('tamu-instansi').value,
+            nopol: document.getElementById('tamu-nopol').value,
+            tujuan: document.getElementById('tamu-tujuan').value,
+            fotoBase64: base64
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              if (res.success) {
+                App.UI.toast(res.message);
+                document.getElementById('form-tamu').reset();
+                document.getElementById('tamu-preview').style.display = 'none';
+                document.getElementById('tamu-base64').value = '';
+                App.Tamu.loadActive();
+              } else {
+                App.UI.toast(res.message, true);
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .registerTamu(payload);
+        },
+
+        loadActive: function() {
+          var container = document.getElementById('list-tamu-aktif');
+          container.innerHTML = '<div class="list-empty">Memuat data tamu...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty"><i class="fa-solid fa-check-circle" style="color: var(--accent-emerald); margin-right: 6px;"></i>Tidak ada tamu aktif saat ini.</div>';
+                return;
+              }
+              data.forEach(function(tamu, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.animationDelay = (idx * 80) + 'ms';
+                div.innerHTML = '<div class="list-item-info">' +
+                  '<h4>' + tamu.nama + '</h4>' +
+                  '<p><i class="fa-solid fa-clock" style="margin-right:4px;"></i>' + tamu.waktu +
+                  ' &nbsp;|&nbsp; <i class="fa-solid fa-car" style="margin-right:4px;"></i>' + (tamu.nopol || '-') +
+                  '</p></div>' +
+                  '<button onclick="App.Tamu.checkout(\'' + tamu.id + '\')" class="btn btn-sm btn-dark" style="flex-shrink:0;">' +
+                  '<i class="fa-solid fa-right-from-bracket"></i> Keluar</button>';
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal memuat: ' + err.message + '</div>';
+            })
+            .getActiveVisitorsByLocation(App.Session.currentSiteId);
+        },
+
+        checkout: function(id) {
+          App.UI.showLoading('Memproses Check-out...');
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              App.UI.toast(res.message, !res.success);
+              if (res.success) App.Tamu.loadActive();
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .checkoutTamu(id);
+        }
+      },
+
+      // ==================== PATROLI MODULE ====================
+      Patroli: {
+        scanner: null,
+        kondisi: 'AMAN',
+        currentLat: 0,
+        currentLng: 0,
+        scanFailCount: 0,
+        isBypassMode: false,
+
+        openLiveScanner: function() {
+          var currentHour = new Date().getHours();
+          var isTester = (App.Session.currentPetugas && App.Session.currentPetugas.toLowerCase() === 'rai');
+          if (!isTester && currentHour >= 6 && currentHour < 18) {
+             App.UI.toast("Gagal: Jadwal patroli HANYA AKTIF pada shift malam (18:00 - 06:00).", true);
+             return;
+          }
+
+          var scannerUrl = GITHUB_SCANNER_URL || localStorage.getItem('satpam_scanner_url');
+          if (!scannerUrl) {
+            var inputUrl = prompt(
+              "Pengaturan URL Live Scanner:\nMasukkan link GitHub Pages scanner Anda (contoh: https://username.github.io/satpam/scanner.html):",
+              "scanner.html"
+            );
+            if (inputUrl && inputUrl.trim()) {
+              scannerUrl = inputUrl.trim();
+              localStorage.setItem('satpam_scanner_url', scannerUrl);
+            } else {
+              return this.startScan();
+            }
+          }
+
+          var appReturnUrl = APP_URL ? (APP_URL + "?page=Index") : window.location.href;
+          var sep = scannerUrl.indexOf('?') !== -1 ? '&' : '?';
+          var fullUrl = scannerUrl + sep +
+            'returnUrl=' + encodeURIComponent(appReturnUrl) +
+            '&siteId=' + encodeURIComponent(App.Session.currentSiteId || '') +
+            '&petugas=' + encodeURIComponent(App.Session.currentPetugas || '');
+
+          var win = window.open(fullUrl, '_blank');
+          if (!win || win.closed || typeof win.closed === 'undefined') {
+            window.location.href = fullUrl;
+          }
+        },
+
+        startScan: function() {
+          var currentHour = new Date().getHours();
+          var isTester = (App.Session.currentPetugas && App.Session.currentPetugas.toLowerCase() === 'rai');
+          if (!isTester && currentHour >= 6 && currentHour < 18) {
+             App.UI.toast("Gagal: Jadwal patroli HANYA AKTIF pada shift malam (18:00 - 06:00).", true);
+             return;
+          }
+
+          var reader = document.getElementById('qr-reader');
+          reader.style.display = 'block';
+
+          var btnTutup = document.getElementById('btn-tutup-scanner');
+          if (btnTutup) btnTutup.style.display = 'block';
+
+          // Selalu buat instance baru agar tidak ada state lama yang mengganggu
+          if (this.scanner) {
+            try { this.scanner.stop(); } catch(e) {}
+            this.scanner = null;
+          }
+          this.scanner = new Html5Qrcode("qr-reader");
+          
+          var self = this;
+
+          // Hitung ukuran qrbox secara adaptif berdasarkan lebar layar
+          var readerWidth = reader.offsetWidth || 300;
+          var qrboxSize = Math.min(Math.floor(readerWidth * 0.75), 300);
+          
+          var scanConfig = {
+            fps: 30,
+            qrbox: { width: qrboxSize, height: qrboxSize },
+            aspectRatio: 1.0,
+            disableFlip: false,
+            experimentalFeatures: {
+              useBarCodeDetectorIfSupported: true
+            }
+          };
+
+          var cameraConfig = {
+            facingMode: "environment"
+          };
+          
+          // Meminta izin kamera secara eksplisit terlebih dahulu (Penting untuk iOS & Android)
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ 
+              video: { 
+                facingMode: "environment",
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+              } 
+            })
+              .then(function(stream) {
+                // Izin diberikan. Hentikan stream sementara lalu jalankan scanner
+                stream.getTracks().forEach(function(track) { track.stop(); });
+                
+                self.scanner.start(
+                  cameraConfig,
+                  scanConfig,
+                  function(decodedText) {
+                    // Getarkan HP sebagai feedback berhasil
+                    if (navigator.vibrate) navigator.vibrate(200);
+                    self.scanner.stop().then(function() {
+                      reader.style.display = 'none';
+                      var btnTutup = document.getElementById('btn-tutup-scanner');
+                      if (btnTutup) btnTutup.style.display = 'none';
+                      self.handleScanSuccess(decodedText);
+                    }).catch(function() {
+                      reader.style.display = 'none';
+                      var btnTutup = document.getElementById('btn-tutup-scanner');
+                      if (btnTutup) btnTutup.style.display = 'none';
+                      self.handleScanSuccess(decodedText);
+                    });
+                  },
+                  function(errorMessage) { /* Abaikan error frame kosong */ }
+                ).catch(function(err) {
+                  App.UI.toast('Gagal memulai scanner: ' + err, true);
+                  reader.style.display = 'none';
+                  var btnTutup = document.getElementById('btn-tutup-scanner');
+                  if (btnTutup) btnTutup.style.display = 'none';
+                });
+              })
+              .catch(function(err) {
+                // Jika izin ditolak (Khususnya di iOS Safari yang memblokir Iframe Cross-Origin)
+                // Kita gunakan Fallback Mode: Buka kamera bawaan HP (Native Camera)
+                reader.style.display = 'none';
+                var btnTutup = document.getElementById('btn-tutup-scanner');
+                if (btnTutup) btnTutup.style.display = 'none';
+                document.getElementById('qr-fallback-input').click();
+              });
+          } else {
+            // Fallback untuk browser lawas
+            reader.style.display = 'none';
+            var btnTutup = document.getElementById('btn-tutup-scanner');
+            if (btnTutup) btnTutup.style.display = 'none';
+            document.getElementById('qr-fallback-input').click();
+          }
+        },
+
+        stopScan: function(success) {
+          if (this.scanner) {
+             try { this.scanner.stop(); } catch(e) {}
+             document.getElementById('qr-reader').style.display = 'none';
+             var btnTutup = document.getElementById('btn-tutup-scanner');
+             if (btnTutup) btnTutup.style.display = 'none';
+          }
+          if (!success) {
+             this.scanFailCount = (this.scanFailCount || 0) + 1;
+             if (this.scanFailCount >= 3) {
+                this.enableBypassMode();
+             } else {
+                App.UI.toast('Scan dibatalkan. Coba lagi (' + this.scanFailCount + '/3 gagal untuk bypass)', true);
+             }
+          }
+        },
+
+        enableBypassMode: function() {
+          this.isBypassMode = true;
+          this.scanFailCount = 0;
+          if (this.scanner) {
+            try { this.scanner.stop(); } catch(e) {}
+            document.getElementById('qr-reader').style.display = 'none';
+          }
+          var btnTutup = document.getElementById('btn-tutup-scanner');
+          if (btnTutup) btnTutup.style.display = 'none';
+          
+          document.getElementById('patroli-id-titik').style.display = 'none';
+          document.getElementById('patroli-nama-titik').style.display = 'none';
+          
+          var bypassSelect = document.getElementById('patroli-bypass-select');
+          bypassSelect.style.display = 'block';
+          
+          document.getElementById('form-patroli').classList.remove('hidden');
+          var areaTemuan = document.getElementById('patroli-temuan-area');
+          areaTemuan.classList.remove('hidden');
+          
+          App.UI.toast('Gagal scan 3 kali. Mode Foto Sekitar aktif. Wajib foto.', false);
+          
+          bypassSelect.innerHTML = '<option value="">Memuat titik patroli...</option>';
+          google.script.run
+            .withSuccessHandler(function(data) {
+              bypassSelect.innerHTML = '<option value="">-- Pilih Titik Patroli (Bypass) --</option>';
+              if(data && data.length > 0) {
+                data.forEach(function(cp) {
+                  if(cp.status !== 'SUDAH') {
+                    var opt = document.createElement('option');
+                    opt.value = cp.id;
+                    opt.text = cp.nama + ' (' + cp.id + ')';
+                    bypassSelect.appendChild(opt);
+                  }
+                });
+              }
+            })
+            .withFailureHandler(function(err){
+               bypassSelect.innerHTML = '<option value="">Gagal memuat titik</option>';
+            })
+            .getCheckpointsByLocation(App.Session.currentSiteId, App.Session.currentPetugas);
+        },
+
+        handleFallbackScan: function(e) {
+          if (!e.target.files || e.target.files.length === 0) return;
+          var file = e.target.files[0];
+          
+          App.UI.showLoading('Menganalisis QR Code...');
+          
+          if (!this.scanner) {
+            this.scanner = new Html5Qrcode("qr-reader");
+          }
+          
+          var self = this;
+          this.scanner.scanFile(file, true)
+            .then(function(decodedText) {
+              App.UI.hideLoading();
+              self.handleScanSuccess(decodedText);
+            })
+            .catch(function(err) {
+              App.UI.hideLoading();
+              self.scanFailCount = (self.scanFailCount || 0) + 1;
+              if (self.scanFailCount >= 3) {
+                 self.enableBypassMode();
+              } else {
+                 App.UI.toast('Gambar tidak terbaca / QR Code tidak ditemukan. (' + self.scanFailCount + '/3)', true);
+              }
+            });
+        },
+
+        handleScanSuccess: function(qrCode) {
+          this.scanFailCount = 0;
+          this.isBypassMode = false;
+          document.getElementById('patroli-id-titik').style.display = 'inline-flex';
+          document.getElementById('patroli-nama-titik').style.display = 'inline-flex';
+          document.getElementById('patroli-bypass-select').style.display = 'none';
+
+          document.getElementById('patroli-id-titik').textContent = qrCode;
+          document.getElementById('form-patroli').classList.remove('hidden');
+          App.UI.toast('QR Code Berhasil Dibaca!');
+
+          // Get GPS dengan akurasi tinggi
+          if (navigator.geolocation) {
+            var self = this;
+            navigator.geolocation.getCurrentPosition(
+              function(pos) {
+                self.currentLat = pos.coords.latitude;
+                self.currentLng = pos.coords.longitude;
+              },
+              function(err) {
+                App.UI.toast('GPS belum aktif. Nyalakan lokasi HP Anda.', true);
+              },
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+          }
+        },
+
+        setKondisi: function(status) {
+          this.kondisi = status;
+          var btnAman = document.getElementById('btn-kondisi-aman');
+          var btnTemuan = document.getElementById('btn-kondisi-temuan');
+          var areaTemuan = document.getElementById('patroli-temuan-area');
+
+          if (status === 'AMAN') {
+            btnAman.className = 'toggle-btn aman-active';
+            btnTemuan.className = 'toggle-btn';
+            areaTemuan.classList.add('hidden');
+          } else {
+            btnTemuan.className = 'toggle-btn temuan-active';
+            btnAman.className = 'toggle-btn';
+            areaTemuan.classList.remove('hidden');
+          }
+        },
+
+        submit: function() {
+          var base64 = document.getElementById('patroli-base64').value;
+          
+          var idTitikVal = this.isBypassMode ? document.getElementById('patroli-bypass-select').value : document.getElementById('patroli-id-titik').textContent;
+          if (this.isBypassMode && !idTitikVal) {
+            return App.UI.toast('Pilih titik patroli terlebih dahulu!', true);
+          }
+
+          if (this.kondisi === 'TEMUAN' && !base64) {
+            return App.UI.toast('Foto bukti wajib dilampirkan jika ada temuan!', true);
+          }
+          if (this.isBypassMode && !base64) {
+            return App.UI.toast('Foto sekitar wajib dilampirkan pada mode bypass!', true);
+          }
+
+          App.UI.showLoading('Mengambil lokasi GPS...');
+
+          var self = this;
+          
+          // Ambil GPS terbaru saat submit (jangan pakai data lama)
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              function(pos) {
+                self.currentLat = pos.coords.latitude;
+                self.currentLng = pos.coords.longitude;
+                self._doSubmit();
+              },
+              function(err) {
+                // Jika GPS gagal, tetap coba kirim dengan data GPS terakhir
+                App.UI.toast('GPS kurang akurat, mencoba dengan posisi terakhir...', true);
+                setTimeout(function() { self._doSubmit(); }, 1000);
+              },
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+          } else {
+            this._doSubmit();
+          }
+        },
+
+        _doSubmit: function() {
+          var base64 = document.getElementById('patroli-base64').value;
+          var catatanText = document.getElementById('patroli-catatan').value;
+          if (this.isBypassMode) {
+             catatanText = "[BYPASS SCAN] " + catatanText;
+          }
+          var idTitikVal = this.isBypassMode ? document.getElementById('patroli-bypass-select').value : document.getElementById('patroli-id-titik').textContent;
+
+          App.UI.showLoading('Memvalidasi Geofencing GPS...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            idTitik: idTitikVal,
+            petugas: App.Session.currentPetugas,
+            kondisi: this.kondisi,
+            catatan: catatanText,
+            fotoBase64: base64,
+            lat: this.currentLat,
+            lng: this.currentLng
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              App.UI.toast(res.message, !res.success);
+              if (res.success) {
+                document.getElementById('form-patroli').classList.add('hidden');
+                document.getElementById('patroli-base64').value = '';
+                document.getElementById('patroli-preview').style.display = 'none';
+                document.getElementById('patroli-catatan').value = '';
+                App.Patroli.setKondisi('AMAN');
+                App.Patroli.isBypassMode = false;
+                document.getElementById('patroli-bypass-select').style.display = 'none';
+                document.getElementById('patroli-id-titik').style.display = 'inline-flex';
+                document.getElementById('patroli-nama-titik').style.display = 'inline-flex';
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .submitPatroli(payload);
+        },
+
+        loadCheckpoints: function() {
+          var container = document.getElementById('list-checkpoints');
+          
+          // Cek jadwal secara lokal di HP
+          var currentHour = new Date().getHours();
+          var isTester = (App.Session.currentPetugas && App.Session.currentPetugas.toLowerCase() === 'rai');
+          if (!isTester && currentHour >= 6 && currentHour < 18) {
+             container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose); font-weight:600;"><i class="fa-solid fa-clock" style="margin-bottom:8px; font-size:20px; display:block;"></i> Jadwal patroli HANYA AKTIF pada shift malam (18:00 - 06:00). Saat ini di luar jadwal patroli.</div>';
+             return;
+          }
+
+          container.innerHTML = '<div class="list-empty">Memuat checkpoint...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty">Belum ada checkpoint untuk lokasi ini.</div>';
+                return;
+              }
+              data.forEach(function(cp, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.animationDelay = (idx * 60) + 'ms';
+                
+                var badgeHtml = cp.status === 'SUDAH' 
+                  ? '<span class="badge badge-emerald"><i class="fa-solid fa-check"></i> Sudah Discan</span>' 
+                  : '<span class="badge badge-rose"><i class="fa-solid fa-xmark"></i> Belum Discan</span>';
+
+                div.innerHTML = '<div class="list-item-info">' +
+                  '<h4><i class="fa-solid fa-map-pin" style="color:var(--accent-purple);margin-right:6px;"></i>' + cp.nama + '</h4>' +
+                  '<p style="font-family:monospace; font-size:11px;">' + cp.id + '</p>' +
+                  '</div>' + badgeHtml;
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal: ' + err.message + '</div>';
+            })
+            .getCheckpointsByLocation(App.Session.currentSiteId, App.Session.currentPetugas);
+        }
+      },
+
+      // ==================== LOGISTIK MODULE (Packing Only) ====================
+      Logistik: {
+        submit: function(e) {
+          e.preventDefault();
+          App.UI.showLoading('Menyimpan Data Logistik...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            jenis: document.getElementById('log-jenis').value,
+            nopol: document.getElementById('log-nopol').value,
+            pengemudi: document.getElementById('log-pengemudi').value,
+            noSuratJalan: document.getElementById('log-suratjalan').value,
+            asalTujuan: document.getElementById('log-asaltujuan').value,
+            keterangan: document.getElementById('log-keterangan').value,
+            fotoBase64: document.getElementById('log-base64').value,
+            petugas: App.Session.currentPetugas
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              if (res.success) {
+                App.UI.toast(res.message);
+                document.getElementById('form-logistik').reset();
+                document.getElementById('log-preview').style.display = 'none';
+                document.getElementById('log-base64').value = '';
+                App.Logistik.loadRiwayat();
+              } else {
+                App.UI.toast(res.message, true);
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .submitLogistik(payload);
+        },
+
+        loadRiwayat: function() {
+          var container = document.getElementById('list-logistik');
+          container.innerHTML = '<div class="list-empty">Memuat riwayat...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty">Belum ada data logistik hari ini.</div>';
+                return;
+              }
+              data.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.animationDelay = (idx * 60) + 'ms';
+                
+                var actionHtml = '';
+                if (item.status === 'SELESAI') {
+                  actionHtml = '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">' +
+                               '<span class="badge badge-amber" style="font-size:10px;">Masuk: ' + item.waktu + '</span>' +
+                               '<span class="badge badge-emerald" style="font-size:10px;">Keluar: ' + item.waktuSelesai + '</span>' +
+                               '</div>';
+                } else {
+                  actionHtml = '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">' +
+                               '<span class="badge badge-amber" style="font-size:11px; margin-bottom:4px;">' + item.waktu + '</span>' +
+                               '<button class="btn btn-sm btn-dark" style="font-size:11px; padding:4px 8px;" onclick="App.Logistik.checkout(\'' + item.id + '\')">Selesai Loading</button>' +
+                               '</div>';
+                }
+
+                div.innerHTML = '<div class="list-item-info">' +
+                  '<h4><i class="fa-solid fa-truck" style="color:var(--accent-amber);margin-right:6px;"></i>' + item.jenis + '</h4>' +
+                  '<p>' + item.nopol + ' — ' + item.pengemudi + ' — SJ: ' + item.noSuratJalan + '</p>' +
+                  '</div>' + actionHtml;
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal: ' + err.message + '</div>';
+            })
+            .getLogistikHariIni(App.Session.currentSiteId);
+        },
+
+        checkout: function(id) {
+          if (!confirm("Apakah kendaraan ini sudah selesai loading dan keluar area?")) return;
+          App.UI.showLoading('Memproses...');
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.showLoading(false);
+              App.UI.showToast(res.message, res.success ? "success" : "error");
+              if (res.success) App.Logistik.loadRiwayat();
+            })
+            .withFailureHandler(function(err) {
+              App.UI.showLoading(false);
+              App.UI.showToast("Gagal: " + err.message, "error");
+            })
+            .checkoutLogistik(id);
+        }
+      },
+
+      // ==================== PAKET MODULE (Kantor Only) ====================
+      Paket: {
+        submit: function(e) {
+          e.preventDefault();
+          App.UI.showLoading('Mencatat Paket/Barang...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            jenis: document.getElementById('pkt-jenis').value,
+            pengirimPenerima: document.getElementById('pkt-pengirim').value,
+            ekspedisi: document.getElementById('pkt-ekspedisi').value,
+            keterangan: document.getElementById('pkt-keterangan').value,
+            fotoBase64: document.getElementById('pkt-base64').value,
+            petugas: App.Session.currentPetugas
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              if (res.success) {
+                App.UI.toast(res.message);
+                document.getElementById('form-paket').reset();
+                document.getElementById('pkt-preview').style.display = 'none';
+                document.getElementById('pkt-base64').value = '';
+                App.Paket.loadRiwayat();
+              } else {
+                App.UI.toast(res.message, true);
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .submitPaket(payload);
+        },
+
+        loadRiwayat: function() {
+          var container = document.getElementById('list-paket');
+          container.innerHTML = '<div class="list-empty">Memuat data paket...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty">Belum ada paket/barang hari ini.</div>';
+                return;
+              }
+              data.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.flexDirection = 'column';
+                div.style.alignItems = 'flex-start';
+                div.style.gap = '10px';
+                div.style.animationDelay = (idx * 60) + 'ms';
+                
+                var statusHtml = '';
+                if (item.status === 'Sudah Diambil') {
+                  statusHtml = '<div style="margin-top:8px; padding:8px; background:var(--bg-light); border-radius:8px; width:100%; font-size:13px;">' +
+                               '<strong>Diambil oleh:</strong> ' + item.pengambil + ' (' + item.waktuDiambil + ')<br>' +
+                               '<span style="color:var(--muted)">' + item.catatan + '</span></div>';
+                } else {
+                  statusHtml = '<button onclick="App.Paket.handover(\'' + item.id + '\')" class="btn-block" style="margin-top:8px; background:var(--accent-cyan); color:white; border:none; padding:8px; border-radius:8px; font-weight:600; cursor:pointer;">Serahkan Barang</button>';
+                }
+
+                div.innerHTML = '<div style="display:flex; justify-content:space-between; width:100%;">' +
+                                  '<div class="list-item-info">' +
+                                    '<h4><i class="fa-solid fa-box-open" style="color:var(--accent-cyan);margin-right:6px;"></i>' + item.jenis + '</h4>' +
+                                    '<p>' + item.pengirimPenerima + ' (' + item.ekspedisi + ')</p>' +
+                                  '</div>' +
+                                  '<span class="badge badge-blue" style="height:fit-content;">' + item.waktu + '</span>' +
+                                '</div>' + statusHtml;
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal: ' + err.message + '</div>';
+            })
+            .getRiwayatPaket(App.Session.currentSiteId);
+        },
+
+        handover: function(idPaket) {
+          var pengambil = prompt("Siapa yang mengambil paket/barang ini?");
+          if (!pengambil) return;
+          var catatan = prompt("Keterangan tambahan (Opsional, contoh: Disimpan di gudang, dll):");
+          
+          App.UI.showLoading("Memproses penyerahan...");
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              App.UI.toast(res.message, !res.success);
+              if(res.success) App.Paket.loadRiwayat();
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast("Error: " + err.message, true);
+            })
+            .handoverPaket(idPaket, pengambil, catatan || "");
+        }
+      },
+
+      // ==================== KUNCI MODULE (Kantor Only) ====================
+      Kunci: {
+        submit: function(e) {
+          e.preventDefault();
+          App.UI.showLoading('Mencatat Peminjaman Kunci...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            namaRuangan: document.getElementById('kunci-ruangan').value,
+            peminjam: document.getElementById('kunci-peminjam').value,
+            keperluan: document.getElementById('kunci-keperluan').value,
+            petugas: App.Session.currentPetugas
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              if (res.success) {
+                App.UI.toast(res.message);
+                document.getElementById('form-kunci').reset();
+                App.Kunci.loadAktif();
+              } else {
+                App.UI.toast(res.message, true);
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .submitSerahTerimaKunci(payload);
+        },
+
+        loadAktif: function() {
+          var container = document.getElementById('list-kunci');
+          container.innerHTML = '<div class="list-empty">Memuat data kunci...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty"><i class="fa-solid fa-lock" style="color:var(--accent-emerald);margin-right:6px;"></i>Semua kunci tersimpan aman.</div>';
+                return;
+              }
+              data.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.animationDelay = (idx * 60) + 'ms';
+                div.innerHTML = '<div class="list-item-info">' +
+                  '<h4><i class="fa-solid fa-key" style="color:var(--accent-cyan);margin-right:6px;"></i>' + item.ruangan + '</h4>' +
+                  '<p>' + item.peminjam + ' — sejak ' + item.waktu + '</p>' +
+                  '</div>' +
+                  '<button onclick="App.Kunci.kembalikan(\'' + item.id + '\')" class="btn btn-sm btn-dark" style="flex-shrink:0;">' +
+                  '<i class="fa-solid fa-rotate-left"></i> Kembali</button>';
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal: ' + err.message + '</div>';
+            })
+            .getKunciAktif(App.Session.currentSiteId);
+        },
+
+        kembalikan: function(id) {
+          App.UI.showLoading('Mengembalikan Kunci...');
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              App.UI.toast(res.message, !res.success);
+              if (res.success) App.Kunci.loadAktif();
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .kembalikanKunci(id);
+        }
+      },
+
+      // ==================== INSIDEN MODULE ====================
+      Insiden: {
+        submit: function(e) {
+          e.preventDefault();
+          var base64 = document.getElementById('insiden-base64').value;
+          if (!base64) return App.UI.toast('Foto TKP wajib dilampirkan!', true);
+
+          App.UI.showLoading('Mengirim Laporan Darurat...');
+
+          var payload = {
+            siteId: App.Session.currentSiteId,
+            pelapor: App.Session.currentPetugas + ' (' + App.Session.currentSiteName + ')',
+            kategori: document.getElementById('insiden-kategori').value,
+            prioritas: document.getElementById('insiden-prioritas').value,
+            lokasi: document.getElementById('insiden-lokasi').value,
+            kronologi: document.getElementById('insiden-kronologi').value,
+            fotoBase64: base64
+          };
+
+          google.script.run
+            .withSuccessHandler(function(res) {
+              App.UI.hideLoading();
+              if (res.success) {
+                App.UI.toast('Laporan Insiden Terkirim!');
+                document.getElementById('form-insiden').reset();
+                document.getElementById('insiden-preview').style.display = 'none';
+                document.getElementById('insiden-base64').value = '';
+                App.Insiden.loadRiwayat();
+              } else {
+                App.UI.toast(res.message, true);
+              }
+            })
+            .withFailureHandler(function(err) {
+              App.UI.hideLoading();
+              App.UI.toast('Error: ' + err.message, true);
+            })
+            .reportIncident(payload);
+        },
+
+        loadRiwayat: function() {
+          var container = document.getElementById('list-insiden');
+          if (!container) return; // Prevent error if element not found
+          container.innerHTML = '<div class="list-empty">Memuat riwayat insiden...</div>';
+
+          google.script.run
+            .withSuccessHandler(function(data) {
+              container.innerHTML = '';
+              if (!data || data.length === 0) {
+                container.innerHTML = '<div class="list-empty">Belum ada laporan insiden hari ini.</div>';
+                return;
+              }
+              data.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'list-item';
+                div.style.flexDirection = 'column';
+                div.style.alignItems = 'flex-start';
+                div.style.gap = '10px';
+                div.style.animationDelay = (idx * 60) + 'ms';
+                
+                var priorityColor = item.prioritas.includes('Darurat') ? 'var(--accent-rose)' : (item.prioritas.includes('Sedang') ? 'var(--accent-amber)' : 'var(--accent-blue)');
+
+                div.innerHTML = '<div style="display:flex; justify-content:space-between; width:100%;">' +
+                                  '<div class="list-item-info">' +
+                                    '<h4><i class="fa-solid fa-triangle-exclamation" style="color:' + priorityColor + ';margin-right:6px;"></i>' + item.kategori + '</h4>' +
+                                    '<p><strong>Lokasi:</strong> ' + item.lokasi + '</p>' +
+                                  '</div>' +
+                                  '<span class="badge badge-rose" style="height:fit-content; background:' + priorityColor + ';">' + item.waktu + '</span>' +
+                                '</div>' +
+                                '<div style="margin-top:4px; padding:8px; background:var(--bg-light); border-radius:8px; width:100%; font-size:13px; color:var(--muted);">' +
+                                '<strong>Kronologi:</strong> ' + item.kronologi + '</div>';
+                container.appendChild(div);
+              });
+            })
+            .withFailureHandler(function(err) {
+              container.innerHTML = '<div class="list-empty" style="color:var(--accent-rose);">Gagal memuat: ' + err.message + '</div>';
+            })
+            .getRiwayatInsiden(App.Session.currentSiteId);
+        }
+      }
+
+    };
+
+    // ==================== EVENT LISTENERS ====================
+
+    var APP_URL = "<?= typeof APP_URL !== 'undefined' ? APP_URL : '' ?>";
+    var GITHUB_SCANNER_URL = "<?= typeof SCANNER_URL !== 'undefined' ? SCANNER_URL : '' ?>" || localStorage.getItem('satpam_scanner_url') || "";
+    var INITIAL_SCANNED_CODE = "<?= typeof SCANNED_CODE !== 'undefined' ? SCANNED_CODE : '' ?>";
+
+    // Listener jika scanner mengirim hasil via window.opener.postMessage
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'QR_SCANNED' && event.data.code) {
+        App.UI.navigate('patroli', document.querySelector('.nav-btn[data-view="patroli"]'));
+        App.Patroli.handleScanSuccess(event.data.code);
+      }
+    });
+
+    // Camera input handler
+    document.getElementById('camera-input').addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        App.Camera.compressImage(e.target.files[0]);
+      }
+      e.target.value = ''; // Reset agar bisa pilih file yang sama lagi
+    });
+
+    // Gallery input handler
+    document.getElementById('gallery-input').addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        App.Camera.compressImage(e.target.files[0]);
+      }
+      e.target.value = '';
+    });
+
+    // Validasi Sesi Login & Network monitor
+    window.onload = function() {
+      // 1. Cek User Session dari Login
+      var savedUser = sessionStorage.getItem('satpam_user');
+      if (!savedUser) {
+        // Tampilkan overlay alih-alih redirect otomatis untuk mencegah Sandbox SecurityError
+        document.getElementById('unauth-overlay').style.display = 'flex';
+        document.getElementById('btn-login-redirect').href = getAppPageUrl('index.html');
+        return;
+      }
+      
+      var user = JSON.parse(savedUser);
+      App.Session.currentPetugas = user.name;
+      
+      // Jika user sudah diassign ke lokasi tertentu (Bukan Admin/ALL)
+      if (user.siteId && user.siteId !== 'ALL') {
+        App.Session.selectSite(user.siteId);
+        // Sembunyikan tombol ganti lokasi untuk Satpam biasa
+        var btnSwitch = document.getElementById('btn-switch-site');
+        if (btnSwitch) btnSwitch.style.display = 'none';
+      }
+
+      // 3. Cek apakah ada kiriman checkpoint dari redirect URL Scanner (?scanned=...)
+      var urlParams = new URLSearchParams(window.location.search);
+      var scannedFromUrl = INITIAL_SCANNED_CODE || urlParams.get('scanned');
+      if (scannedFromUrl) {
+        setTimeout(function() {
+          App.UI.navigate('patroli', document.querySelector('.nav-btn[data-view="patroli"]'));
+          App.Patroli.handleScanSuccess(scannedFromUrl);
+        }, 500);
+      }
+
+      // 2. Monitor Network Status & Session Validity
+      setInterval(function() {
+        var dot = document.getElementById('connection-dot');
+        if (dot) {
+          if (navigator.onLine) {
+            dot.style.background = 'var(--accent-emerald)';
+          } else {
+            dot.style.background = 'var(--accent-rose)';
+          }
+        }
+        
+        // Pengecekan session valid secara berkala (misal tiap 30 detik, tapi di sini tiap 3 detik untuk fast respons)
+        if (navigator.onLine && user && user.token) {
+          google.script.run
+            .withSuccessHandler(function(res) {
+               if (!res.valid) {
+                 alert("Sesi Anda telah kedaluwarsa karena akun digunakan di device lain. Anda akan dikeluarkan otomatis.");
+                 sessionStorage.removeItem('satpam_user');
+                 window.location.reload();
+               }
+            })
+            .checkSession(user.username, user.token);
+        }
+      }, 5000);
+    };
+
+    // Tambahkan method Logout di Session
+    App.Session.logout = function() {
+      var savedUser = sessionStorage.getItem('satpam_user');
+      // 1. Hapus sesi lokal DULU
+      sessionStorage.removeItem('satpam_user');
+      if (APP_URL) {
+        window.location.href = getAppPageUrl('index.html');
+      } else {
+        window.location.reload();
+      }
+      // 3. Fire-and-forget: beritahu server untuk hapus token (berjalan di background)
+      if(savedUser) {
+        try {
+          var user = JSON.parse(savedUser);
+          google.script.run.logoutUser(user.username);
+        } catch(e) {}
+      }
+    };
+  </script>
+</body>
+</html>

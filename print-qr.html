@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cetak QR Code Checkpoint</title>`r`n  <!-- GitHub Pages API Bridge -->`r`n  <script src="api-config.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --text: #0f172a;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn:hover { background: #2563eb; }
+    
+    /* Grid layout for printing compactly */
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 15px;
+      justify-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .qr-card {
+      background: white;
+      border: 1px dashed #cbd5e1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      page-break-inside: avoid; /* Prevent breaking across pages when printing */
+    }
+    .qr-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    .qr-title {
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      line-height: 1.2;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .qr-id {
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* Print specific styles */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .controls {
+        display: none; /* Hide buttons when printing */
+      }
+      .qr-grid {
+        gap: 10px;
+      }
+      .qr-card {
+        border: 1px solid #000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Kumpulan QR Code Checkpoint</h1>
+    <p>Silakan tekan tombol cetak di bawah ini. Semua QR akan disesuaikan ukurannya agar muat di dalam 1 lembar (atau seminimal mungkin).</p>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="window.print()">🖨️ Cetak Semua QR Code Sekarang</button>
+  </div>
+
+  <div class="qr-grid" id="qr-container">
+    <div style="text-align:center; width:100%; grid-column: 1 / -1; padding: 20px;">
+      Sedang mengambil data dari database...
+    </div>
+  </div>
+
+  <script>
+    // Memanggil fungsi dari server Kode.gs
+    google.script.run
+      .withSuccessHandler(function(data) {
+        var container = document.getElementById('qr-container');
+        container.innerHTML = ''; // Bersihkan loading
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div style="text-align:center; width:100%; grid-column: 1 / -1;">Belum ada data titik checkpoint di database.</div>';
+          return;
+        }
+
+        data.forEach(function(item) {
+          var encodedId = encodeURIComponent(item.id);
+          var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodedId;
+          
+          var card = document.createElement('div');
+          card.className = 'qr-card';
+          card.innerHTML = 
+            '<img src="' + qrUrl + '" alt="QR ' + item.id + '" crossorigin="anonymous" />' +
+            '<div class="qr-title">' + item.nama + '</div>' +
+            '<div class="qr-id">' + item.id + '</div>';
+          
+          container.appendChild(card);
+        });
+      })
+      .withFailureHandler(function(err) {
+        document.getElementById('qr-container').innerHTML = '<div style="color:red; text-align:center; grid-column: 1 / -1;">Gagal mengambil data: ' + err.message + '</div>';
+      })
+      .getAllCheckpointsForPrint();
+  </script>
+</body>
+</html>
