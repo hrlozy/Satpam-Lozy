@@ -21,3 +21,4 @@ Smart Security Management System — Frontend Web Application untuk Petugas Keam
 
 ## 🔗 Live Site
 Hosted on GitHub Pages: [https://hrlozy.github.io/Satpam-Lozy/](https://hrlozy.github.io/Satpam-Lozy/)
+
